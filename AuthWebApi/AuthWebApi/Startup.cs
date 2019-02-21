@@ -13,6 +13,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 
+[assembly: OwinStartup(typeof(AuthWebApi.Startup))]
 namespace AuthWebApi
 {
    public class Startup
@@ -29,19 +30,11 @@ namespace AuthWebApi
          app.UseWebApi(config); // aqui se enlaza a la pila de ejecucion la API con el middleware OWIN
       }
 
-      public void ConfigureOAuth(IAppBuilder app)
+      public void ConfigureOAuth(IAppBuilder app, IServiceContainer container)
       {
-         OAuthAuthorizationServerOptions OAuthServerOptions = new OAuthAuthorizationServerOptions()
-         {
-            AllowInsecureHttp = true,
-            TokenEndpointPath = new PathString("/token"),
-            AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
-            Provider = new SimpleAuthorizationServerProvider()
-         };
-
          // Token Generation
-         app.UseOAuthAuthorizationServer(OAuthServerOptions);
-         app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
+         app.UseOAuthAuthorizationServer(container.GetInstance<OAuthAuthorizationServerOptions>());
+         app.UseOAuthBearerAuthentication(container.GetInstance<OAuthBearerAuthenticationOptions>());
 
       }
 
@@ -52,10 +45,22 @@ namespace AuthWebApi
                new UserStore<IdentityUser>(
                   new AuthContext()
                   )
-               )
+               )  
          );
          container.Register<IAuthRepository<UserModel, RepoResponse>, AuthRepo>();
-         container.Register<SimpleAuthorizationServerProvider> ();
+
+         container.Register<SimpleAuthorizationServerProvider>();
+         container.Register(factory =>
+            new OAuthAuthorizationServerOptions()
+            {
+               AllowInsecureHttp = true,
+               TokenEndpointPath = new PathString("/token"),
+               AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
+               Provider = factory.GetInstance<SimpleAuthorizationServerProvider>()
+            }
+         );
+         container.Register<OAuthBearerAuthenticationOptions>();
+
       }
    }
 }
