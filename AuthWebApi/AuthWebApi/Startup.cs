@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -26,41 +27,34 @@ namespace AuthWebApi
          var container = new ServiceContainer();
          container.RegisterApiControllers();
          container.EnableWebApi(config);
-         this.registerServices(container);
+         this.RegisterServices(container);
+         this.ConfigureOAuth(app, container);
          app.UseWebApi(config); // aqui se enlaza a la pila de ejecucion la API con el middleware OWIN
       }
 
       public void ConfigureOAuth(IAppBuilder app, IServiceContainer container)
       {
          // Token Generation
-         app.UseOAuthAuthorizationServer(container.GetInstance<OAuthAuthorizationServerOptions>());
-         app.UseOAuthBearerAuthentication(container.GetInstance<OAuthBearerAuthenticationOptions>());
+         app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions()
+         {
+            AllowInsecureHttp = true,
+            TokenEndpointPath = new PathString("/token"),
+            AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
+            Provider = new SimpleAuthorizationServerProvider(
+               container.GetInstance<IAuthRepository<UserModel, RepoResponse>>())
+         });
+         app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
 
       }
 
-      public void registerServices(IServiceContainer container)
+      public void RegisterServices(IServiceContainer container)
       {
-         container.Register(factory =>
-            new UserManager<IdentityUser>(
-               new UserStore<IdentityUser>(
-                  new AuthContext()
-                  )
-               )  
-         );
+         container.Register<DbContext, AuthContext>();
+         container.Register<IUserStore<IdentityUser>, UserStore<IdentityUser>>();
+         container.Register<UserManager<IdentityUser>>();
          container.Register<IAuthRepository<UserModel, RepoResponse>, AuthRepo>();
-
-         container.Register<SimpleAuthorizationServerProvider>();
-         container.Register(factory =>
-            new OAuthAuthorizationServerOptions()
-            {
-               AllowInsecureHttp = true,
-               TokenEndpointPath = new PathString("/token"),
-               AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
-               Provider = factory.GetInstance<SimpleAuthorizationServerProvider>()
-            }
-         );
-         container.Register<OAuthBearerAuthenticationOptions>();
-
+         
+         
       }
    }
 }

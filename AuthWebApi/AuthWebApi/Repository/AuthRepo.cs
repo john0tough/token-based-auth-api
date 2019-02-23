@@ -12,7 +12,7 @@ namespace AuthWebApi.Repository
    public class AuthRepo : IAuthRepository<UserModel, RepoResponse>
    {
       private UserManager<IdentityUser> userManager;
-      AuthRepo(UserManager<IdentityUser> userManager)
+      public AuthRepo(UserManager<IdentityUser> userManager)
       {
          this.userManager = userManager;
       }

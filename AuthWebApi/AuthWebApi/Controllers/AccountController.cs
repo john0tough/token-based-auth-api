@@ -15,7 +15,7 @@ namespace AuthWebApi.Controllers
    public class AccountController : ApiController
    {
       private IAuthRepository<UserModel, RepoResponse> repoService;
-      AccountController(IAuthRepository<UserModel, RepoResponse> repoService)
+      public AccountController(IAuthRepository<UserModel, RepoResponse> repoService)
       {
          this.repoService = repoService;
       }

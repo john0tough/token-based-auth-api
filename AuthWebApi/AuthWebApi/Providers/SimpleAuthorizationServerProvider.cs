@@ -13,8 +13,8 @@ namespace AuthWebApi.Providers
 {
    public class SimpleAuthorizationServerProvider: OAuthAuthorizationServerProvider
    {
-      private IAuthRepository<UserModel, RepoResponse> repoService;
-      SimpleAuthorizationServerProvider(IAuthRepository<UserModel, RepoResponse> repoService)
+      private readonly IAuthRepository<UserModel, RepoResponse> repoService;
+      public SimpleAuthorizationServerProvider(IAuthRepository<UserModel, RepoResponse> repoService)
       {
          this.repoService = repoService;
       }
