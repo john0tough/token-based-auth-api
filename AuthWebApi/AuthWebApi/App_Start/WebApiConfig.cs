@@ -20,7 +20,7 @@ namespace AuthWebApi
              routeTemplate: "api/{controller}/{id}",
              defaults: new { id = RouteParameter.Optional }
          );
-         SwaggerConfig.Register(config);
+         
          var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First(); // forza el formato json a CamelCasePropertyNamesContractResolver
 
       }

@@ -23,12 +23,16 @@ namespace AuthWebApi
       {
          HttpConfiguration config = new HttpConfiguration(); // aqui se configuran las rutas del API, le pasamos este objeto al WebApiConfig.Register
          WebApiConfig.Register(config); // agrega mas configuraciones al HttpConfig
+         SwaggerConfig.Register(config); // activa documentacion swagger
 
          var container = new ServiceContainer();
          container.RegisterApiControllers();
          container.EnableWebApi(config);
+
+         
          this.RegisterServices(container);
          this.ConfigureOAuth(app, container);
+         app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll); //activa cors
          app.UseWebApi(config); // aqui se enlaza a la pila de ejecucion la API con el middleware OWIN
       }
 
