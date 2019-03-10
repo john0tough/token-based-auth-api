@@ -10,5 +10,6 @@ namespace AuthWebApi.Repository
    {
       Task<TAuthResponse> RegisterUser(TAuthUser user);
       Task<TAuthUser> FindUser(string userName, string password);
+      
    }
 }

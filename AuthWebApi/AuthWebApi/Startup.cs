@@ -38,6 +38,7 @@ namespace AuthWebApi
 
       public void ConfigureOAuth(IAppBuilder app, IServiceContainer container)
       {
+         var repoRefreshTokenProvider = container.GetInstance<IRefreshTokenRepository>();
          // Token Generation
          app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions()
          {
@@ -45,7 +46,9 @@ namespace AuthWebApi
             TokenEndpointPath = new PathString("/token"),
             AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
             Provider = new SimpleAuthorizationServerProvider(
-               container.GetInstance<IAuthRepository<UserModel, RepoResponse>>())
+               container.GetInstance<IAuthRepository<UserModel, RepoResponse>>()
+               , repoRefreshTokenProvider),
+            RefreshTokenProvider = new SimpleRefreshTokenProvider(repoRefreshTokenProvider)
          });
          app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
 
@@ -57,8 +60,9 @@ namespace AuthWebApi
          container.Register<IUserStore<IdentityUser>, UserStore<IdentityUser>>();
          container.Register<UserManager<IdentityUser>>();
          container.Register<IAuthRepository<UserModel, RepoResponse>, AuthRepo>();
-         
-         
+         container.Register<IRefreshTokenRepository, AuthRepo>();
+
+
       }
    }
 }
