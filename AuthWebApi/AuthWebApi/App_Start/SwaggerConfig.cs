@@ -1,6 +1,7 @@
 using System.Web.Http;
 using WebActivatorEx;
 using AuthWebApi;
+using AuthWebApi.Filters;
 using Swashbuckle.Application;
 
 namespace AuthWebApi

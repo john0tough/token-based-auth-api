@@ -8,17 +8,20 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AuthWebApi.Repository
 {
-   public class AuthRepo : IAuthRepository<UserModel, RepoResponse>, 
-      IRefreshTokenRepository
+   public class AuthRepo : 
+      IUserRepository<UserModel, RepoResponse>,
+      IRefreshTokenRepository<RefreshToken>, 
+      IClient<Client>
    {
       private readonly UserManager<IdentityUser> userManager;
-      private readonly IMainContext ctx;
+      private readonly IAuthContext ctx;
 
-      public AuthRepo(UserManager<IdentityUser> userManager, IMainContext context)
+      public AuthRepo(UserManager<IdentityUser> userManager, IAuthContext context)
       {
          this.userManager = userManager;
          this.ctx = context;
       }
+
       public async Task<RepoResponse> RegisterUser(UserModel user)
       {
          var identityUser = new IdentityUser
@@ -28,19 +31,19 @@ namespace AuthWebApi.Repository
          var result = await this.userManager.CreateAsync(identityUser, user.Password);
          return new RepoResponse
          {
-            errors = result.Errors,
-            succeded = result.Succeeded
+            Errors = result.Errors,
+            Succeded = result.Succeeded
          };
       }
 
       public async Task<UserModel> FindUser(string userName, string password)
       {
          IdentityUser identityUser = await this.userManager.FindAsync(userName, password);
-         return new UserModel
+         return identityUser != null ? new UserModel
          {
             UserName = identityUser.UserName,
             Password = password
-         };
+         } : null;
       }
 
       public void Dispose()
@@ -57,7 +60,9 @@ namespace AuthWebApi.Repository
       public async Task<bool> AddRefreshToken(RefreshToken refreshToken)
       {
 
-         var existingToken = await this.ctx.EntityRefreshTokens.FindAsync(refreshToken);
+         var existingToken = this.ctx.EntityRefreshTokens
+            .GetAll()
+            .FirstOrDefault(e => e.Id == refreshToken.Id);
 
          if (existingToken != null)
          {
@@ -71,8 +76,8 @@ namespace AuthWebApi.Repository
 
       public async Task<bool> RemoveRefreshToken(string refreshTokenId)
       {
-         var result = await this.ctx.EntityRefreshTokens
-            .GetAll().FirstOrDefaultAsync(rt => rt.Id == refreshTokenId);
+         var result = this.ctx.EntityRefreshTokens
+            .GetAll().FirstOrDefault(rt => rt.Id == refreshTokenId);
 
          if (result != null)
          {
@@ -90,8 +95,8 @@ namespace AuthWebApi.Repository
 
       public async Task<RefreshToken> FindRefreshToken(string refreshTokenId)
       {
-         var refreshToken = await this.ctx.EntityRefreshTokens.GetAll()
-            .FirstOrDefaultAsync(rt => rt.Id == refreshTokenId);
+         var refreshToken =  this.ctx.EntityRefreshTokens.GetAll()
+            .FirstOrDefault(rt => rt.Id == refreshTokenId);
 
          return refreshToken;
       }

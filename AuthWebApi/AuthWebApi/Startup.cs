@@ -29,7 +29,7 @@ namespace AuthWebApi
          container.RegisterApiControllers();
          container.EnableWebApi(config);
 
-         
+
          this.RegisterServices(container);
          this.ConfigureOAuth(app, container);
          app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll); //activa cors
@@ -38,7 +38,6 @@ namespace AuthWebApi
 
       public void ConfigureOAuth(IAppBuilder app, IServiceContainer container)
       {
-         var repoRefreshTokenProvider = container.GetInstance<IRefreshTokenRepository>();
          // Token Generation
          app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions()
          {
@@ -46,9 +45,11 @@ namespace AuthWebApi
             TokenEndpointPath = new PathString("/token"),
             AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
             Provider = new SimpleAuthorizationServerProvider(
-               container.GetInstance<IAuthRepository<UserModel, RepoResponse>>()
-               , repoRefreshTokenProvider),
-            RefreshTokenProvider = new SimpleRefreshTokenProvider(repoRefreshTokenProvider)
+               container.GetInstance<IUserRepository<UserModel, RepoResponse>>(),
+               container.GetInstance<IRefreshTokenRepository<RefreshToken>>(),
+               container.GetInstance<IClient<Client>>()),
+            RefreshTokenProvider = new SimpleRefreshTokenProvider(
+               container.GetInstance<IRefreshTokenRepository<RefreshToken>>())
          });
          app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
 
@@ -59,10 +60,10 @@ namespace AuthWebApi
          container.Register<DbContext, AuthContext>();
          container.Register<IUserStore<IdentityUser>, UserStore<IdentityUser>>();
          container.Register<UserManager<IdentityUser>>();
-         container.Register<IAuthRepository<UserModel, RepoResponse>, AuthRepo>();
-         container.Register<IRefreshTokenRepository, AuthRepo>();
-
-
+         container.Register<IAuthContext, AuthContext>();
+         container.Register<IUserRepository<UserModel, RepoResponse>, AuthRepo>();
+         container.Register<IRefreshTokenRepository<RefreshToken>, AuthRepo>();
+         container.Register<IClient<Client>, AuthRepo>();
       }
    }
 }

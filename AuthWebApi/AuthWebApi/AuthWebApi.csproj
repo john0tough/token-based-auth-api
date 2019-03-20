@@ -155,12 +155,13 @@
     <Compile Include="Models\ApplicationTypes.cs" />
     <Compile Include="Models\AuthContext.cs" />
     <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\Contracts\IAuthContext.cs" />
     <Compile Include="Models\DbSaver.cs" />
     <Compile Include="Models\DbSetAdapter.cs" />
-    <Compile Include="Models\IDbEntity.cs" />
-    <Compile Include="Models\IMainContext.cs" />
-    <Compile Include="Models\IRepository.cs" />
-    <Compile Include="Models\ISaver.cs" />
+    <Compile Include="Models\Contracts\IDbEntity.cs" />
+    <Compile Include="Models\Contracts\IContext.cs" />
+    <Compile Include="Models\Contracts\IRepository.cs" />
+    <Compile Include="Models\Contracts\ISaver.cs" />
     <Compile Include="Models\RefreshToken.cs" />
     <Compile Include="Models\RepoResponse.cs" />
     <Compile Include="Models\Repository.cs" />
@@ -169,7 +170,8 @@
     <Compile Include="Providers\SimpleAuthorizationServerProvider.cs" />
     <Compile Include="Providers\SimpleRefreshTokenProvider.cs" />
     <Compile Include="Repository\AuthRepo.cs" />
-    <Compile Include="Repository\IAuthRepository.cs" />
+    <Compile Include="Repository\IUserRepository.cs" />
+    <Compile Include="Repository\IClient.cs" />
     <Compile Include="Repository\IRefreshTokenRepository.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

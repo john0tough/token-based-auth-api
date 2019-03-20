@@ -22,7 +22,7 @@ namespace AuthWebApi
          );
          
          var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First(); // forza el formato json a CamelCasePropertyNamesContractResolver
-
+         
       }
    }
 }

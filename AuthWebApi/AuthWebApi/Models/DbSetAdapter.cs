@@ -18,7 +18,7 @@ namespace AuthWebApi.Models
          this.privateDbSet = d;
       }
 
-      public IQueryable<T> GetAll()
+      public IEnumerable<T> GetAll()
       {
          return this.privateDbSet;
       }

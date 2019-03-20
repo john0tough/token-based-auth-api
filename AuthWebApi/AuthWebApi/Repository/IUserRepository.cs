@@ -6,10 +6,9 @@ using System.Web;
 
 namespace AuthWebApi.Repository
 {
-   public interface IAuthRepository<TAuthUser, TAuthResponse>: IDisposable
+   public interface IUserRepository<TAuthUser, TAuthResponse>: IDisposable
    {
       Task<TAuthResponse> RegisterUser(TAuthUser user);
       Task<TAuthUser> FindUser(string userName, string password);
-      
    }
 }

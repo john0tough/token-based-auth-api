@@ -14,8 +14,8 @@ namespace AuthWebApi.Controllers
    [RoutePrefix("api/account")]
    public class AccountController : ApiController
    {
-      private IAuthRepository<UserModel, RepoResponse> repoService;
-      public AccountController(IAuthRepository<UserModel, RepoResponse> repoService)
+      private IUserRepository<UserModel, RepoResponse> repoService;
+      public AccountController(IUserRepository<UserModel, RepoResponse> repoService)
       {
          this.repoService = repoService;
       }
@@ -59,11 +59,11 @@ namespace AuthWebApi.Controllers
             return InternalServerError();
          }
 
-         if (!result.succeded)
+         if (!result.Succeded)
          {
-            if (result.errors != null)
+            if (result.Errors != null)
             {
-               foreach (string error in result.errors)
+               foreach (string error in result.Errors)
                {
                   ModelState.AddModelError("", error);
                }

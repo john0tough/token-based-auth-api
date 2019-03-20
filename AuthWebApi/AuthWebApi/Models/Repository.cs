@@ -1,18 +1,19 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AuthWebApi.Models
 {
    public class Repository<T> : IRepository<T> where T : class
    {
-      private readonly IMainContext ctx;
+      private readonly IContext ctx;
 
-      public Repository(IMainContext ctx)
+      public Repository(IContext ctx)
       {
          this.ctx = ctx;
       }
 
-      public IQueryable<T> GetAll()
+      public IEnumerable<T> GetAll()
       {
          return this.ctx.Set<T>().GetAll();
       }

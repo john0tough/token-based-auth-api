@@ -9,13 +9,12 @@ namespace AuthWebApi.Models
 {
    public class DbSaver: ISaver
    {
-      private readonly IMainContext ctx;
+      private readonly IContext ctx;
 
-      public DbSaver(IMainContext ctx)
+      public DbSaver(IContext ctx)
       {
          this.ctx = ctx;
       }
-
 
       public async Task<int> AsyncSave()
       {

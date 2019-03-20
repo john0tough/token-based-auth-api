@@ -12,16 +12,20 @@ using Microsoft.Owin.Security.OAuth;
 
 namespace AuthWebApi.Providers
 {
-   public class SimpleAuthorizationServerProvider: OAuthAuthorizationServerProvider
+   public class SimpleAuthorizationServerProvider : OAuthAuthorizationServerProvider
    {
-      private readonly IAuthRepository<UserModel, RepoResponse> repoService;
-      private readonly IRefreshTokenRepository refreshTokenRepo;
+      private readonly IUserRepository<UserModel, RepoResponse> repoService;
+      private readonly IRefreshTokenRepository<RefreshToken> refreshTokenRepo;
+      private readonly IClient<Client> repoClient;
+
       public SimpleAuthorizationServerProvider(
-         IAuthRepository<UserModel, RepoResponse> repoService,
-         IRefreshTokenRepository refreshTokenRepo)
+         IUserRepository<UserModel, RepoResponse> repoService,
+         IRefreshTokenRepository<RefreshToken> refreshTokenRepo,
+         IClient<Client> repoClient)
       {
          this.repoService = repoService;
          this.refreshTokenRepo = refreshTokenRepo;
+         this.repoClient = repoClient;
       }
 
       public override Task ValidateClientAuthentication(
@@ -33,7 +37,7 @@ namespace AuthWebApi.Providers
 
          if (!context.TryGetBasicCredentials(out clientId, out clientSecret))
          {
-            context.TryGetBasicCredentials(out clientId, out clientSecret);
+            context.TryGetFormCredentials(out clientId, out clientSecret);
          }
 
          if (context.ClientId == null)
@@ -42,7 +46,7 @@ namespace AuthWebApi.Providers
             return Task.FromResult<object>(null);
          }
 
-         client = this.refreshTokenRepo.FindClient(context.ClientId);
+         client = this.repoClient.FindClient(context.ClientId);
          if (client == null)
          {
             context.SetError("invalid_clientId",
@@ -85,19 +89,20 @@ namespace AuthWebApi.Providers
       {
          context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
-         
-            var user = await this.repoService.FindUser(context.UserName, context.Password);
 
-            if (user == null)
-            {
-               context.SetError("invalid_grant", "The user name or password is incorrect.");
-               return;
-            }
-         
+         var user = await this.repoService.FindUser(context.UserName, context.Password);
+
+         if (user == null)
+         {
+            context.SetError("invalid_grant", "The user name or password is incorrect.");
+            return;
+         }
+
 
          var identity = new ClaimsIdentity(context.Options.AuthenticationType);
          identity.AddClaim(new Claim("sub", context.UserName));
          identity.AddClaim(new Claim("role", "user"));
+         identity.AddClaim(new Claim(ClaimTypes.Name, context.UserName));
          var props = new AuthenticationProperties(new Dictionary<string, string>
          {
             {
@@ -109,7 +114,7 @@ namespace AuthWebApi.Providers
          });
 
          var ticket = new AuthenticationTicket(identity, props);
-         context.Validated(identity);
+         context.Validated(ticket);
 
       }
 

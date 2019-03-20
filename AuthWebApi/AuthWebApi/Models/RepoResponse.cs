@@ -7,8 +7,7 @@ namespace AuthWebApi.Models
 {
    public class RepoResponse
    {
-      public bool succeded { get; set; }
-      public IEnumerable<string> errors { get; set; }
-      
+      public bool Succeded { get; set; }
+      public IEnumerable<string> Errors { get; set; }
    }
 }

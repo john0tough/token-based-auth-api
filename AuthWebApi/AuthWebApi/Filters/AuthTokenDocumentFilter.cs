@@ -2,45 +2,62 @@
 using System.Web.Http.Description;
 using Swashbuckle.Swagger;
 
-public class AuthTokenDocumentFilter : IDocumentFilter
+namespace AuthWebApi.Filters
 {
-   public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
+   public class AuthTokenDocumentFilter : IDocumentFilter
    {
-      swaggerDoc.paths.Add("/token", new PathItem
+      public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
       {
-         post = new Operation
+         swaggerDoc.paths.Add("/token", new PathItem
          {
-            tags = new List<string> {"Auth"},
-            consumes = new List<string>
+            post = new Operation
             {
-               "application/x-www-form-urlencoded"
-            },
-            parameters = new List<Parameter>
-            {
-               new Parameter
+               tags = new List<string> {"Auth"},
+               consumes = new List<string>
                {
-                  type = "string",
-                  name = "grant_type",
-                  required = true,
-                  @in = "formData",
-                  @default = "password"
+                  "application/x-www-form-urlencoded"
                },
-               new Parameter
+               parameters = new List<Parameter>
                {
-                  type = "string",
-                  name = "username",
-                  required = false,
-                  @in = "formData"
-               },
-               new Parameter
-               {
-                  type = "string",
-                  name = "password",
-                  required = false,
-                  @in = "formData"
+                  new Parameter
+                  {
+                     type = "string",
+                     name = "grant_type",
+                     required = true,
+                     @in = "formData",
+                     @default = "password|refresh_token"
+                  },
+                  new Parameter
+                  {
+                     type = "string",
+                     name = "username",
+                     required = false,
+                     @in = "formData"
+                  },
+                  new Parameter
+                  {
+                     type = "string",
+                     name = "password",
+                     required = false,
+                     @in = "formData"
+                  },
+                  new Parameter
+                  {
+                     type = "string",
+                     name = "client_id",
+                     required = false,
+                     @in = "formData"
+                  },
+                  new Parameter
+                  {
+                     type = "string",
+                     name = "refresh_token",
+                     required = false,
+                     @in = "formData"
+                  },
                }
             }
-         }
-      });
+         });
+      }
    }
 }

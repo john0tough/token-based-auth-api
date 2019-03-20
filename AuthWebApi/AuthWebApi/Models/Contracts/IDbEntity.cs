@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -6,7 +7,7 @@ namespace AuthWebApi.Models
 {
    public interface IDbEntity<TEntity>  where TEntity : class
    {
-      IQueryable<TEntity> GetAll();
+      IEnumerable<TEntity> GetAll();
 
       Task<TEntity> FindAsync(params Object[] keyValues);
 

@@ -11,8 +11,8 @@ namespace AuthWebApi.Providers
 {
    public class SimpleRefreshTokenProvider : IAuthenticationTokenProvider
    {
-      private readonly IRefreshTokenRepository repo;
-      public SimpleRefreshTokenProvider(IRefreshTokenRepository repo)
+      private readonly IRefreshTokenRepository<RefreshToken> repo;
+      public SimpleRefreshTokenProvider(IRefreshTokenRepository<RefreshToken> repo)
       {
          this.repo = repo;
       }
@@ -24,9 +24,9 @@ namespace AuthWebApi.Providers
 
       public async Task CreateAsync(AuthenticationTokenCreateContext context)
       {
-         var clientid = context.Ticket.Properties.Dictionary["as:client_id"];
+         var clientId = context.Ticket.Properties.Dictionary["as:client_id"];
 
-         if (string.IsNullOrEmpty(clientid))
+         if (string.IsNullOrEmpty(clientId))
          {
             return;
          }
@@ -38,7 +38,7 @@ namespace AuthWebApi.Providers
          var token = new RefreshToken()
          {
             Id = Helper.Helper.GetHash(refreshTokenId),
-            ClientId = clientid,
+            ClientId = clientId,
             Subject = context.Ticket.Identity.Name,
             IssuedUtc = DateTime.UtcNow,
             ExpiresUtc = DateTime.UtcNow.AddMinutes(Convert.ToDouble(refreshTokenLifeTime))

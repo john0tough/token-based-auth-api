@@ -4,13 +4,12 @@ using AuthWebApi.Models;
 
 namespace AuthWebApi.Repository
 {
-   public interface IRefreshTokenRepository
+   public interface IRefreshTokenRepository<TRefreshToken>
    {
-      Client FindClient(string clientId);
-      Task<bool> AddRefreshToken(RefreshToken refreshToken);
+      Task<bool> AddRefreshToken(TRefreshToken refreshToken);
       Task<bool> RemoveRefreshToken(string refreshTokenId);
-      Task<bool> RemoveRefreshToken(RefreshToken refreshToken);
-      Task<RefreshToken> FindRefreshToken(string refreshTokenId);
-      List<RefreshToken> GetAllRefreshTokens();
+      Task<bool> RemoveRefreshToken(TRefreshToken refreshToken);
+      Task<TRefreshToken> FindRefreshToken(string refreshTokenId);
+      List<TRefreshToken> GetAllRefreshTokens();
    }
 }
